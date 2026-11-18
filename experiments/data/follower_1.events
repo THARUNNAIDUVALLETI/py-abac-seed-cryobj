@@ -1,0 +1,4 @@
+21:22:50.210 START leader_idx=1 isolating_idx=2
+21:23:10.228 ISOLATE
+21:24:10.858 HEAL
+21:24:51.421 END

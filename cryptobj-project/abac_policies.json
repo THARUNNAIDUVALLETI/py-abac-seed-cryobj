@@ -1,0 +1,84 @@
+[
+  {
+    "uid": "policy-1-ip-range",
+    "description": "Allow Raft/cert traffic only from the cluster zone to the cluster or services zone",
+    "effect": "allow",
+    "rules": {
+      "subject": {
+        "$.zone": {
+          "condition": "IsIn",
+          "values": [
+            "cluster"
+          ]
+        }
+      },
+      "resource": {
+        "$.zone": {
+          "condition": "IsIn",
+          "values": [
+            "cluster",
+            "services"
+          ]
+        }
+      },
+      "action": {
+        "$.type": {
+          "condition": "IsIn",
+          "values": [
+            "raft_message",
+            "request_vote",
+            "append_entries",
+            "cert_request"
+          ]
+        }
+      }
+    },
+    "targets": {},
+    "priority": 1
+  },
+  {
+    "uid": "policy-2-time-window",
+    "description": "Untrusted nodes may talk only between 08:00 and 17:00",
+    "effect": "deny",
+    "rules": {
+      "subject": {
+        "$.trust": {
+          "condition": "Equals",
+          "value": "untrusted"
+        }
+      },
+      "context": {
+        "$.hour": {
+          "condition": "AnyOf",
+          "values": [
+            {
+              "condition": "Lt",
+              "value": 8
+            },
+            {
+              "condition": "Gte",
+              "value": 17
+            }
+          ]
+        }
+      }
+    },
+    "targets": {},
+    "priority": 10
+  },
+  {
+    "uid": "policy-3-malicious-node",
+    "description": "Deny any sender with a strike score of 3 or more",
+    "effect": "deny",
+    "rules": {
+      "context": {
+        "$.strikes": {
+          "condition": "Gte",
+          "value": 3
+        }
+      }
+    },
+    "targets": {},
+    "priority": 10
+  }
+]
